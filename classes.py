@@ -20,7 +20,8 @@ class Inode:
         self.nome = nome
         self.pai = pai
         self.direitos = [bin(7), bin(0), bin(0)]
-        self.blocos = self.indirSimp = []
+        self.blocos = [] if self.ehDir else [bytearray(512) for _ in range(10)]
+        self.indirSimp = []
 
     def __str__(self):
         return f"{self.nome + '/' if self.ehDir else self.nome}"

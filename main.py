@@ -1,4 +1,4 @@
-import datetime, os
+import os
 from classes import User, Inode
 
 # variaveis
@@ -90,6 +90,16 @@ def chmod(cmds):
     else:
         print("Erro: Número de argumentos inválido")
         
+# gravar_conteudo(nome, posição, nbytes, buffer)
+def grava(cmds):
+    if len(cmds) == 4:
+        for d in inode.blocos:
+            if d.nome == cmds[0] and not d.ehDir:
+                for c in cmds[3]:
+                    # a terminar
+
+
+
 def main():
     global inode, user, listUser
 
@@ -123,6 +133,8 @@ def main():
             chown(cmds)
         elif cmds[0] == "chmod":
             chmod(cmds)
+        elif cmds[0] == "grava":
+            grava(cmds)
 
 
 main()
