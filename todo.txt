@@ -1,0 +1,5 @@
+ - ao situar a pasta atual, printar absolute path
+ - se receber um parametro, printar aquele diretorio
+ - testar direitos em todas ações
+ - colocar mensagens de erro (ex: arquivo inexistente)
+ - ao comparar o nome de algum diretorio com o recebido pelo input do usuario, nome do diretorio vem com / 
