@@ -5,7 +5,7 @@
  - possibilitar acessar terminal como um usuario cadastrado (no começo de cada linha do terminal, colocar o nome assim como no linux)
  - começar a tratar os blocos, os arquivos
  - talvez fazer um sistema externo de localização dos diretorios/arquivos, com chave o nome do diretorio e valor como diretorios/arquivos dentro dele, simulando um absolute path
- - quando usar o atributo tamanho?
+ - quando usar o atributo tamanho? -> no ls
  - fazer sistema de atualizacao das datas modif. e ult. acesso
 
  Funções de Manipulação:
