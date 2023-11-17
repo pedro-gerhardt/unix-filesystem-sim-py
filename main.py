@@ -1,11 +1,11 @@
 import os
 from classes import User, Inode
+from config import *
 
 # variaveis
 userRoot = User(0, "root")
 listUser = [userRoot]
 user = userRoot
-userIdInc = 1
 
 root = Inode("", userRoot, True)
 inode = root
@@ -27,12 +27,23 @@ def ls(cmds):
         for sd in inode.blocos:
             print(sd.info())
     elif len(cmds) == 2:
-        for sd in inode.blocos:
-            if sd.nome == cmds[1]:
-                for ssd in sd.blocos:
-                    print(ssd)
+        if cmds[1] == "-d":
+            for sd in inode.blocos:
+                print(sd.data())
+        else:
+            for sd in inode.blocos:
+                if sd.nome == cmds[1]:
+                    for ssd in sd.blocos:
+                        print(ssd)
+    elif len(cmds) == 3:
+        if cmds[2] == "-d":
+            for sd in inode.blocos:                
+                if sd.nome == cmds[1]:
+                    for ssd in sd.blocos:
+                        print(ssd.data())
 
 def cd(cmds):
+    global inode
     if len(cmds) > 1:
         if cmds[1] == ".." and inode.pai is not None:
             inode = inode.pai
@@ -54,9 +65,10 @@ def rmdir(cmds):
                 inode.blocos.remove(d)
 
 def adduser(cmds): 
+    global USER_ID_INC
     if len(cmds) == 2:
-        listUser.append(User(userIdInc, cmds[1]))
-        userIdInc += 1
+        listUser.append(User(USER_ID_INC, cmds[1]))
+        USER_ID_INC += 1
     if len(cmds) == 3:
         listUser.append(User(int(cmds[2]), cmds[1]))
 
@@ -90,13 +102,55 @@ def chmod(cmds):
     else:
         print("Erro: Número de argumentos inválido")
         
-# gravar_conteudo(nome, posição, nbytes, buffer)
 def grava(cmds):
-    if len(cmds) == 4:
+    if len(cmds) != 5:
+        print("Quantidade de parâmetros incorreta!"); return
+    _, nome, posicao, nbytes, buffer = cmds        
+    posicao = int(posicao)
+    nbytes = int(nbytes)
+    if posicao > (QTD_BLOCOS * TAM_BLOCO):
+        print("Erro: posicao maior que o tamanho do disco"); return
+    blocos = None    
+    for d in inode.blocos:
+        if d.nome == nome and not d.ehDir:
+            blocos = d.blocos
+    if blocos is None:
+        print("Arquivo não encontrado!"); return
+    
+    bufferNumerico = [ord(s) for s in buffer]
+    tamParcial = min(len(buffer), nbytes)
+    idxBoc = posicao // TAM_BLOCO
+    posBocInit = offsetStrInit = posicao - (idxBoc * TAM_BLOCO)
+    idxStr = 0
+    posStrInit = idxStr * TAM_BLOCO
+
+    if posicao + tamParcial > TAM_TOTAL:
+        print("Tamanho do bloco maior que o tamanho do disco")
+        return
+
+    while True:
+        if posBocInit + tamParcial <= TAM_BLOCO:
+            blocos[idxBoc][posBocInit:posBocInit + tamParcial] = bufferNumerico[posStrInit:posStrInit + tamParcial]
+            break
+        else:
+            blocos[idxBoc][posBocInit:TAM_BLOCO] = bufferNumerico[posStrInit:posStrInit + min(tamParcial, TAM_BLOCO) - posBocInit]
+            tamParcial -= min(tamParcial, TAM_BLOCO) - posBocInit
+            idxBoc += 1
+            posBocInit = 0
+            idxStr += 1
+            posStrInit = idxStr * TAM_BLOCO - offsetStrInit
+
+def cat(cmds): 
+    if len(cmds) == 2:
         for d in inode.blocos:
-            if d.nome == cmds[0] and not d.ehDir:
-                for c in cmds[3]:
-                    # a terminar
+            if d.nome == cmds[1] and not d.ehDir:
+                print("".join(["".join([chr(b) for b in bloco]) for bloco in d.blocos]))
+
+def formata(cmds): 
+    if len(cmds) == 2:
+        for d in inode.blocos:
+            if d.nome == cmds[1]:
+                d.formata()
 
 
 
@@ -135,6 +189,10 @@ def main():
             chmod(cmds)
         elif cmds[0] == "grava":
             grava(cmds)
+        elif cmds[0] == "cat":
+            cat(cmds)
+        elif cmds[0] == "formata":
+            formata(cmds)
 
 
 main()

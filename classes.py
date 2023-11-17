@@ -1,4 +1,5 @@
 import datetime
+from config import * 
 
 class Inode:
     # header 
@@ -20,7 +21,7 @@ class Inode:
         self.nome = nome
         self.pai = pai
         self.direitos = [bin(7), bin(0), bin(0)]
-        self.blocos = [] if self.ehDir else [bytearray(512) for _ in range(10)]
+        self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS)]
         self.indirSimp = []
 
     def __str__(self):
@@ -28,6 +29,9 @@ class Inode:
 
     def info(self):
         return f"{str(self)}  {'d' if self.ehDir else 'f'}{self.normalizaDireitos()}  {self.prop.nome} {self.grupo.nome}"
+
+    def data(self):
+        return f"{str(self)}  {self.dtCri.isoformat(' ', 'seconds')} {self.dtAtu.isoformat(' ', 'seconds')} {self.dtUltAce.isoformat(' ', 'seconds')}"
 
     def normalizaDireitos(self):
         padrao = "rwx"
@@ -47,6 +51,8 @@ class Inode:
     def setaDireito(self, novosDireitos):
         self.direitos = [bin(int(i)) for i in novosDireitos]
 
+    def formata(self):
+        self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS)]
 
 class User:
     id = 0
