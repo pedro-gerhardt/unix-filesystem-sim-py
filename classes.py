@@ -28,7 +28,8 @@ class Inode:
         return f"{self.nome + '/' if self.ehDir else self.nome}"
 
     def info(self):
-        return f"{str(self)}  {'d' if self.ehDir else 'f'}{self.normalizaDireitos()}  {self.prop.nome} {self.grupo.nome}"
+        self.atualizaTamanho()
+        return f"{str(self)}  {'d' if self.ehDir else 'f'}{self.normalizaDireitos()}  {self.tamanho}  {self.prop.nome} {self.grupo.nome}"
 
     def data(self):
         return f"{str(self)}  {self.dtCri.isoformat(' ', 'seconds')} {self.dtAtu.isoformat(' ', 'seconds')} {self.dtUltAce.isoformat(' ', 'seconds')}"
@@ -53,6 +54,10 @@ class Inode:
 
     def formata(self):
         self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS)]
+
+    def atualizaTamanho(self):
+        self.tamanho = sum([len(b) - b.count(b"\x00") for b in self.blocos])
+
 
 class User:
     id = 0

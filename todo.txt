@@ -1,34 +1,41 @@
-em aberto:
-    - ao situar a pasta atual, printar absolute path, se receber um parametro, printar aquele diretorio
+legenda:
+ * pronto
+ - aberto
+ x abortado
+ + a decidir
+
+lista:
+    * ao situar a pasta atual, printar absolute path, se receber um parametro, printar aquele diretorio
+    * quando usar o atributo tamanho? -> no ls
+    * ao comparar o nome de algum diretorio com o recebido pelo input do usuario, nome do diretorio vem com / 
+    * começar a tratar os blocos, os arquivos
+    * testar escrever buffer maior que 2 blocos
+    
     - testar direitos em todas ações
     - colocar mensagens de erro (ex: arquivo inexistente)
-    - ao comparar o nome de algum diretorio com o recebido pelo input do usuario, nome do diretorio vem com / 
     - possibilitar acessar terminal como um usuario cadastrado (no começo de cada linha do terminal, colocar o nome assim como no linux)
-    - começar a tratar os blocos, os arquivos
-    - talvez fazer um sistema externo de localização dos diretorios/arquivos, com chave o nome do diretorio e valor como diretorios/arquivos dentro dele, simulando um absolute path
-    - talvez ao procurar um absolute path, ver a partir do root descendo
-    - quando usar o atributo tamanho? -> no ls
     - fazer sistema de atualizacao das datas modif. e ult. acesso
-    - testar escrever buffer maior que 2 blocos
-    - talvez fazer sistema de seta para cima, trazer comandos anteriores
     - ao remover um usuario, remover todos seus arquivos/diretorios
     - ao adicionar um usuario, checar se nao há usuario com tal id ou nome
 
+    + talvez fazer um sistema externo de localização dos diretorios/arquivos, com chave o nome do diretorio e valor como diretorios/arquivos dentro dele, simulando um absolute path
+    + talvez ao procurar um absolute path, ver a partir do root descendo
+    + talvez fazer sistema de seta para cima, trazer comandos anteriores
+    
 
 
  Funções de Manipulação:
-- formata( ) /* Limpa estruturas de alocação de arquivo e blocos livres */
-
-x gravar_conteudo(nome, posição, nbytes, buffer)
-x cat(nome)
-x touch(nome) /* deve saber que usuário está criando */
-x rm(nome)
-x chown(user1, user2, arquivo) /* arquivos existentes */
-x chmod(arquivo, flags)
-x mkdir(diretorio) /* só nomes relativos de um subdiretorio*
-x rmdir(nome)
-x cd(diretorio) /* só nomes relativos de um subdiretorio*/
-x ls(diretorio)
-x adduser(nome, id) /* somente administrador */
-x rmuser(nome) /* remove tudo que é referente ao usuário */
-x lsuser( )
+* formata( ) /* Limpa estruturas de alocação de arquivo e blocos livres */
+* gravar_conteudo(nome, posição, nbytes, buffer)
+* cat(nome)
+* touch(nome) /* deve saber que usuário está criando */
+* rm(nome)
+* chown(user1, user2, arquivo) /* arquivos existentes */
+* chmod(arquivo, flags)
+* mkdir(diretorio) /* só nomes relativos de um subdiretorio*
+* rmdir(nome)
+* cd(diretorio) /* só nomes relativos de um subdiretorio*/
+* ls(diretorio)
+* adduser(nome, id) /* somente administrador */
+* rmuser(nome) /* remove tudo que é referente ao usuário */
+* lsuser( )
