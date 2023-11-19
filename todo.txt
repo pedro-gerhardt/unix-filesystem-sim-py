@@ -10,14 +10,23 @@ lista:
     * ao comparar o nome de algum diretorio com o recebido pelo input do usuario, nome do diretorio vem com / 
     * começar a tratar os blocos, os arquivos
     * testar escrever buffer maior que 2 blocos
+    * colocar mensagens de erro (ex: arquivo inexistente)
+    * usar dicionario na lista de usuarios tambem
+    * remodelar relacao filho pai:
+        * trabalhar com nome absoluto, nao relativo
+        * dentro de diretorio armazenar nome, nao inode
+        * dicionario global com nomes como chaves e inodes como valores
     
     - testar direitos em todas ações
-    - colocar mensagens de erro (ex: arquivo inexistente)
     - possibilitar acessar terminal como um usuario cadastrado (no começo de cada linha do terminal, colocar o nome assim como no linux)
     - fazer sistema de atualizacao das datas modif. e ult. acesso
     - ao remover um usuario, remover todos seus arquivos/diretorios
     - ao adicionar um usuario, checar se nao há usuario com tal id ou nome
+    - criar nova funcao data, para mostrar as 3 datas 
+    - inode armazenar apenas id do usuario
+    - ao excluir um diretorio, excluir tudo aquilo dentro
 
+    x talvez padronizar tabs no ls
     + talvez fazer um sistema externo de localização dos diretorios/arquivos, com chave o nome do diretorio e valor como diretorios/arquivos dentro dele, simulando um absolute path
     + talvez ao procurar um absolute path, ver a partir do root descendo
     + talvez fazer sistema de seta para cima, trazer comandos anteriores
@@ -25,6 +34,8 @@ lista:
 
 
  Funções de Manipulação:
+- data
+
 * formata( ) /* Limpa estruturas de alocação de arquivo e blocos livres */
 * gravar_conteudo(nome, posição, nbytes, buffer)
 * cat(nome)
