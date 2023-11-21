@@ -25,7 +25,10 @@ lista:
     * ao excluir um diretorio, excluir tudo aquilo dentro
     * ao remover um usuario, manter arquivos/diretorios, porém ao executar um ls, mostrar id do usuario antigo e nao nome
     
-    - fazer sistema de blocos indiretos
+    - fazer sistema de blocos indiretos:
+        - na lista de blocos indiretos do inode, manter X strings com um endereço de bloco para o dicionario de inodes geral
+        - no dicionario, como valor de cada uma das chaves dessas strings, conter um bytearray de tamanho TAM_BLOCO
+        - nesses blocos de bytearray, salvar informaçao excedente nos blocos diretos
 
     + talvez padronizar tabs no ls
     + help
