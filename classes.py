@@ -26,14 +26,14 @@ class Inode:
         self.ehDir = ehDir
         self.absNome = nome
         self.direitos = [bin(7), bin(5), bin(0)]
-        self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS)]
+        self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS_INT)]
         self.indirSimp = []
 
     def __str__(self):
         return f"{self.relNome()}"
 
-    def info(self, listUser):
-        self.atualizaTamanho()
+    def info(self, listUser, inodes):
+        self.atualizaTamanho(inodes)
         return f"{str(self)}  {'d' if self.ehDir else 'f'}{self.normalizaDireitos()}  {self.tamanho}  {listUser[self.prop].nome if self.prop in listUser else self.prop} {listUser[self.grupo].nome if self.grupo in listUser else self.grupo}"
 
     def data(self):
@@ -52,14 +52,18 @@ class Inode:
         self.direitos = [bin(int(i)) for i in novosDireitos]
 
     def formata(self):
-        self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS)]
+        self.blocos = [] if self.ehDir else [bytearray(TAM_BLOCO) for _ in range(QTD_BLOCOS_INT)]
 
-    def atualizaTamanho(self):
+    def atualizaTamanho(self, inodes):
         self.tamanho = (
             len(self.blocos) * 4
             if self.ehDir
             else sum([len(b) - b.count(b"\x00") for b in self.blocos])
         )
+        if not self.ehDir:
+            for n in self.indirSimp:
+                self.tamanho += len(inodes[n]) - inodes[n].count(b"\x00")
+
 
     def pai(self):
         if "/" == self.absNome:

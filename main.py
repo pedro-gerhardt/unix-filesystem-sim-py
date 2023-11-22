@@ -16,6 +16,9 @@ inodes = {"/": root}
 def _montaPossivelNome(nome):
     return inode.absNome + nome if inode.absNome == "/" else inode.absNome + "/" + nome
 
+def _montaNomePadraoBlocoIndireto(nomeAbs, idxBocInd):
+    return nomeAbs + ".blocoInd" + str(idxBocInd)
+
 # comandos
 def pwd():
     print(inode.absNome)
@@ -57,14 +60,14 @@ def ls(cmds):
         if not inode.verificaPermissao(user.id, Acao.LEITURA):
             print(MSG_PERM_INS); return
         for sd in inode.blocos:
-            print(inodes[sd].info(listUser))
+            print(inodes[sd].info(listUser, inodes))
         inode.atualizaDataAcesso()
     elif len(cmds) == 2:
         nome = _montaPossivelNome(cmds[1])
         if nome in inode.blocos and inodes[nome].ehDir:
             if inodes[nome].verificaPermissao(user.id, Acao.LEITURA):
                 for ssd in inodes[nome].blocos:
-                    print(inodes[ssd].info(listUser))
+                    print(inodes[ssd].info(listUser, inodes))
                 inodes[nome].atualizaDataAcesso()
             else:
                 print(MSG_PERM_INS); return
@@ -214,24 +217,34 @@ def grava(cmds):
         print(MSG_ARG_INV); return
     posicao = int(posicao)
     nbytes = int(nbytes)
-    if posicao > (QTD_BLOCOS * TAM_BLOCO):
-        print("Erro: posição maior que o tamanho do disco."); return
-    blocos = None
+    blocos = blocosInd = nomesInd = None
     nomeAbs = _montaPossivelNome(nome)
     if nomeAbs in inodes and not inodes[nomeAbs].ehDir:
         if inodes[nomeAbs].verificaPermissao(user.id, Acao.ESCRITA):
             blocos = inodes[nomeAbs].blocos
+            nomesInd = inodes[nomeAbs].indirSimp
+            blocosInd = [] # talvez não iniciar aqui, mas somente se algum bloco indireto estiver sendo realmente usado
+            for n in nomesInd:
+                blocosInd.append(inodes[n])
+            # for n in QTD_MAX_BLOCOS_IND:
+            #     nomeBloco = _montaNomePadraoBlocoIndireto(nomeAbs, n) 
+            #     if nomeBloco in inodes:
+            #         blocosInd.append(inodes[nomeBloco])
+
         else:
             print(MSG_PERM_INS); return
-    if blocos is None:
+    if blocos is None or nomesInd is None:
         print(MSG_ARQ_NAO_EXIST); return
+    
+    if posicao > TAM_TOTAL:
+        print("Posição maior que o tamanho do disco!"); return
 
     bufferNumerico = [ord(s) for s in buffer]
     tamParcial = min(len(buffer), nbytes)
     idxBoc = posicao // TAM_BLOCO
     posBocInit = offsetStrInit = posicao - (idxBoc * TAM_BLOCO)
-    idxStr = 0
-    posStrInit = idxStr * TAM_BLOCO
+    idxStr = posStrInit = 0
+    # posStrInit = idxStr * TAM_BLOCO
 
     if posicao + tamParcial > TAM_TOTAL:
         print("Tamanho do bloco maior que o tamanho do disco"); return
@@ -239,16 +252,42 @@ def grava(cmds):
     inodes[nomeAbs].atualizaDataAtualizacao()
 
     while True:
-        if posBocInit + tamParcial <= TAM_BLOCO:
-            blocos[idxBoc][posBocInit:posBocInit + tamParcial] = bufferNumerico[posStrInit:posStrInit + tamParcial]
-            break
+        if idxBoc < QTD_BLOCOS_INT: 
+            if posBocInit + tamParcial <= TAM_BLOCO:
+                blocos[idxBoc][posBocInit:posBocInit + tamParcial] = bufferNumerico[posStrInit:posStrInit + tamParcial]
+                break
+            else:
+                blocos[idxBoc][posBocInit:TAM_BLOCO] = bufferNumerico[posStrInit:posStrInit + min(tamParcial, TAM_BLOCO) - posBocInit]
+                tamParcial -= min(tamParcial, TAM_BLOCO) - posBocInit
+                idxBoc += 1
+                posBocInit = 0
+                idxStr += 1
+                posStrInit = idxStr * TAM_BLOCO - offsetStrInit
+
+        elif idxBoc >= QTD_BLOCOS_INT and idxBoc < QTD_BLOCOS_INT + QTD_MAX_BLOCOS_IND:
+            idxBocInd = idxBoc - QTD_BLOCOS_INT 
+            nomeInd = _montaNomePadraoBlocoIndireto(nomeAbs, idxBocInd)
+            if nomeInd not in nomesInd:
+                nomesInd.append(nomeInd)
+                blocosInd.append(bytearray(TAM_BLOCO))
+                
+            if posBocInit + tamParcial <= TAM_BLOCO:
+                blocosInd[idxBocInd][posBocInit:posBocInit + tamParcial] = bufferNumerico[posStrInit:posStrInit + tamParcial]
+                for n in range(len(nomesInd)):
+                    inodes[nomesInd[n]] = blocosInd[n]
+                break
+            else:
+                blocosInd[idxBocInd][posBocInit:TAM_BLOCO] = bufferNumerico[posStrInit:posStrInit + min(tamParcial, TAM_BLOCO) - posBocInit]
+                tamParcial -= min(tamParcial, TAM_BLOCO) - posBocInit
+                idxBoc += 1
+                posBocInit = 0
+                idxStr += 1
+                posStrInit = idxStr * TAM_BLOCO - offsetStrInit
+
+        # ao final atualizar blocosInd novamente no dicionario principal
         else:
-            blocos[idxBoc][posBocInit:TAM_BLOCO] = bufferNumerico[posStrInit:posStrInit + min(tamParcial, TAM_BLOCO) - posBocInit]
-            tamParcial -= min(tamParcial, TAM_BLOCO) - posBocInit
-            idxBoc += 1
-            posBocInit = 0
-            idxStr += 1
-            posStrInit = idxStr * TAM_BLOCO - offsetStrInit
+            print("Espaço do arquivo estorou!"); return
+
 
 
 def cat(cmds):
@@ -256,7 +295,10 @@ def cat(cmds):
         nome = _montaPossivelNome(cmds[1])
         if nome in inodes and not inodes[nome].ehDir:
             if inodes[nome].verificaPermissao(user.id, Acao.LEITURA):
-                print("".join(["".join([chr(b) for b in bloco]) for bloco in inodes[nome].blocos]))
+                strBlocosInt = "".join(["".join([chr(b) for b in bloco]) for bloco in inodes[nome].blocos])
+                for n in inodes[nome].indirSimp:
+                    strBlocosInt += "".join([chr(c) for c in inodes[n]])
+                print(strBlocosInt)
                 inodes[nome].atualizaDataAcesso()
             else:
                 print(MSG_PERM_INS); return
@@ -358,6 +400,8 @@ def main():
         login(cmds)
     elif cmds[0] == "lsd":
         lsd(cmds)
+    elif cmds[0] == "print":
+        print(inodes)
     
     else:
        print("Comando desconhecido!")

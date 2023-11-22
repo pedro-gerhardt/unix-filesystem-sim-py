@@ -1,6 +1,7 @@
 TAM_BLOCO = 10
-QTD_BLOCOS = 3
-TAM_TOTAL = TAM_BLOCO * QTD_BLOCOS  # alterar com blocos indiretos
+QTD_BLOCOS_INT = 3
+QTD_MAX_BLOCOS_IND = 3
+TAM_TOTAL = TAM_BLOCO * (QTD_BLOCOS_INT + QTD_MAX_BLOCOS_IND)  # alterar com blocos indiretos
 
 
 # mensagens 

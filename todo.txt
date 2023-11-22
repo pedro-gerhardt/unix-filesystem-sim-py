@@ -24,15 +24,17 @@ lista:
     * fazer sistema de atualizacao das datas modif. e ult. acesso
     * ao excluir um diretorio, excluir tudo aquilo dentro
     * ao remover um usuario, manter arquivos/diretorios, porém ao executar um ls, mostrar id do usuario antigo e nao nome
-    
-    - fazer sistema de blocos indiretos:
-        - na lista de blocos indiretos do inode, manter X strings com um endereço de bloco para o dicionario de inodes geral
-        - no dicionario, como valor de cada uma das chaves dessas strings, conter um bytearray de tamanho TAM_BLOCO
-        - nesses blocos de bytearray, salvar informaçao excedente nos blocos diretos
+    * talvez fazer um sistema externo de localização dos diretorios/arquivos, com chave o nome do diretorio e valor como diretorios/arquivos dentro dele, simulando um absolute path
+    * fazer sistema de blocos indiretos:
+        * na lista de blocos indiretos do inode, manter X strings com um endereço de bloco para o dicionario de inodes geral
+        * no dicionario, como valor de cada uma das chaves dessas strings, conter um bytearray de tamanho TAM_BLOCO
+        * nesses blocos de bytearray, salvar informaçao excedente nos blocos indiretos
+        * ao final atualizar blocosInd novamente no dicionario principal
+        * computar tamanho do arquivo levando em consideraçao blocos indiretos
+        * cat ler dos blocos indiretos tambem
 
     + talvez padronizar tabs no ls
     + help
-    + talvez fazer um sistema externo de localização dos diretorios/arquivos, com chave o nome do diretorio e valor como diretorios/arquivos dentro dele, simulando um absolute path
     + talvez ao procurar um absolute path, ver a partir do root descendo
     + talvez fazer sistema de seta para cima, trazer comandos anteriores
     
